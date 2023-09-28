@@ -93,6 +93,7 @@ module.exports = {
       ...query,
       fields: fieldsToSelect, // cannot select other fields as the user may not have the permissions
       filters: {}, // cannot filter for RBAC reasons
+      pageSize: 50
     };
 
     if (!isEmpty(idsToOmit)) {

@@ -5,12 +5,68 @@ const { setCreatorFields, pipeAsync } = require('@strapi/utils');
 const { getService, pickWritableAttributes } = require('../utils');
 const { validateBulkDeleteInput } = require('./validation');
 
+const contentTypesByWebsites = [
+  "api::post.post",
+  "api::letak.letak",
+  "api::career.career",
+  "api::event.event"
+];
+const contentTypesByWebsite = [
+  "api::banner.banner"
+];
+const contentTypesByDomain = [
+  "api::category.category",
+  "api::career-form.career-form",
+  "api::contact-form.contact-form",
+  "api::faq.faq",
+  "api::page.page",
+  "api::tag.tag",
+  "api::tag.tag",
+];
+
 module.exports = {
   async find(ctx) {
     const { userAbility } = ctx.state;
     const { model } = ctx.params;
     const { query } = ctx.request;
 
+    if (query.websiteContext) {
+      const defaultFilter = {'$and': []};
+      query.filters = query.filters ?? defaultFilter;
+
+      let customFilter = null;
+
+      if (contentTypesByWebsites.includes(model)) {
+        customFilter = {
+          "websites": {
+            "domain": {
+              "$eq": query.websiteContext
+            }
+          }
+        };
+      } else if (contentTypesByWebsite.includes(model)) {
+        customFilter = {
+          "website": {
+            "domain": {
+              "$eq": query.websiteContext
+            }
+          }
+        };
+      } else if(contentTypesByDomain.includes(model)) {
+        customFilter = {
+          "domain": {
+            "$eq": query.websiteContext
+          }
+        };
+      }
+
+      if (customFilter) {
+        query.filters["$and"].push(customFilter);
+      }
+    }
+
+    console.warn('after added query', JSON.stringify(query));
+    const { websiteContext, ...customQuery} = query
     const entityManager = getService('entity-manager');
     const permissionChecker = getService('permission-checker').create({ userAbility, model });
 
@@ -18,8 +74,7 @@ module.exports = {
       return ctx.forbidden();
     }
 
-    const permissionQuery = await permissionChecker.sanitizedQuery.read(query);
-
+    const permissionQuery = await permissionChecker.sanitizedQuery.read(customQuery);
     const { results, pagination } = await entityManager.findWithRelationCountsPage(
       permissionQuery,
       model
