@@ -56,11 +56,21 @@ module.exports = {
     }
 
     const configuration = await contentTypeService.findConfiguration(contentType);
+    const disalowedTypes = ["websites", "website", "old_id", "domain"]
+
+    const metadatas = {}
+    for (let i in configuration.metadatas) {
+      metadatas[i] = configuration.metadatas[i]
+      if (disalowedTypes.includes(i)) {
+        metadatas[i].list.searchable = false;
+      }
+    }
 
     const confWithUpdatedMetadata = {
       ...configuration,
-      metadatas: mapValues(assocMainField, configuration.metadatas),
+      metadatas: mapValues(assocMainField, metadatas),
     };
+
 
     const components = await contentTypeService.findComponentsConfigurations(contentType);
 

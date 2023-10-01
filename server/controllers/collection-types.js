@@ -29,6 +29,7 @@ module.exports = {
     const { userAbility } = ctx.state;
     const { model } = ctx.params;
     const { query } = ctx.request;
+    console.log('query', query);
 
     if (query.websiteContext) {
       const defaultFilter = {'$and': []};
@@ -65,7 +66,8 @@ module.exports = {
       }
     }
 
-    console.warn('after added query', JSON.stringify(query));
+    console.log('after added query', JSON.stringify(query));
+    console.log('after added query', query);
     const { websiteContext, ...customQuery} = query
     const entityManager = getService('entity-manager');
     const permissionChecker = getService('permission-checker').create({ userAbility, model });

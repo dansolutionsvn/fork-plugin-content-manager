@@ -17,6 +17,13 @@ const addFiltersClause = (params, filtersClause) => {
   }
 };
 
+const contentTypesByDomain = [
+  {
+    model: "api::post.post",
+    targetField: "categories",
+  }
+]
+
 module.exports = {
   async findAvailable(ctx) {
     const { userAbility } = ctx.state;
@@ -88,12 +95,29 @@ module.exports = {
       fieldsToSelect.push(PUBLISHED_AT_ATTRIBUTE);
     }
 
+    let customFilter = null;
+    if (query.websiteContext) {
+
+      if (contentTypesByDomain.find(e => e.model === model && e.targetField === targetField)) {
+        customFilter = {
+          "domain": {
+            "$eq": query.websiteContext
+          }
+        };
+      }
+
+      if (customFilter) {
+        const defaultFilter = {'$and': []};
+        query.filters = query.filters ?? defaultFilter;
+        query.filters["$and"].push(customFilter);
+      }
+    }
+
     const queryParams = {
       sort: mainField,
       ...query,
       fields: fieldsToSelect, // cannot select other fields as the user may not have the permissions
-      filters: {}, // cannot filter for RBAC reasons
-      pageSize: 50
+      filters: customFilter ? query.filters : {}, // cannot filter for RBAC reasons
     };
 
     if (!isEmpty(idsToOmit)) {
