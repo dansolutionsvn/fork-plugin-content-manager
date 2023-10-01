@@ -1,5 +1,5 @@
 {
-  "name": "@strapi/plugin-content-manager",
+  "name": "@danhuyenphan/plugin-content-manager",
   "version": "4.9.2",
   "description": "Content-manager - A powerful UI to easily manage your data.",
   "repository": {
@@ -7,17 +7,9 @@
     "url": "git://github.com/strapi/strapi.git"
   },
   "license": "MIT",
-  "author": {
-    "name": "Strapi Solutions SAS",
-    "email": "hi@strapi.io",
-    "url": "https://strapi.io"
-  },
+  "author": "Strapi Solutions SAS <hi@strapi.io> (https://strapi.io)",
   "maintainers": [
-    {
-      "name": "Strapi Solutions SAS",
-      "email": "hi@strapi.io",
-      "url": "https://strapi.io"
-    }
+    "Strapi Solutions SAS <hi@strapi.io> (https://strapi.io)"
   ],
   "scripts": {
     "test:unit": "run -T jest",
@@ -41,5 +33,9 @@
     "required": false,
     "kind": "plugin"
   },
-  "gitHead": "91e0be2708e4d1e8ec731c75e73e54c0dfacb67d"
+  "bugs": {
+    "url": "https://github.com/strapi/strapi/issues"
+  },
+  "homepage": "https://github.com/strapi/strapi#readme",
+  "main": ".eslintrc.js"
 }
