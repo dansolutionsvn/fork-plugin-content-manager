@@ -24,24 +24,46 @@ const contentTypesByDomain = [
   "api::tag.tag",
 ];
 
+const isAuthorizedByWebsite = (websiteContext, roles) => {
+  const authMap = {
+    "tamdagroup.eu": "tamdagroup.eu",
+    "tamdafoods.eu": "tamdafoods.eu",
+    "tamdamedia.eu": "tamdamedia.eu",
+    "tamdaoc.eu": "tamdaoc.eu"
+  }
+
+  const isAdminAuth = !Object.keys(authMap).includes(websiteContext);
+  if (isAdminAuth) {
+    const userRoles = roles.map(e => e.name);
+    return roles.find(e => e.code === "strapi-super-admin") || Object.keys(authMap).every(e => userRoles.includes(e));
+  }
+
+  // Multi site authorizations
+  return !!Object.keys(authMap).find(e => e === websiteContext);
+}
+
 module.exports = {
   async find(ctx) {
-    const { userAbility } = ctx.state;
+    const { userAbility, user } = ctx.state;
     const { model } = ctx.params;
     const { query } = ctx.request;
     console.log('query', query);
 
-    if (query.websiteContext) {
+    let website = query.websiteContext;
+    if (!isAuthorizedByWebsite(website, user.roles)) {
+      return ctx.forbidden();
+    }
+
+    if (website) {
       const defaultFilter = {'$and': []};
       query.filters = query.filters ?? defaultFilter;
 
       let customFilter = null;
-
       if (contentTypesByWebsites.includes(model)) {
         customFilter = {
           "websites": {
             "domain": {
-              "$eq": query.websiteContext
+              "$eq": website
             }
           }
         };
@@ -49,14 +71,14 @@ module.exports = {
         customFilter = {
           "website": {
             "domain": {
-              "$eq": query.websiteContext
+              "$eq": website
             }
           }
         };
       } else if(contentTypesByDomain.includes(model)) {
         customFilter = {
           "domain": {
-            "$eq": query.websiteContext
+            "$eq": website
           }
         };
       }
@@ -66,8 +88,7 @@ module.exports = {
       }
     }
 
-    console.log('after added query', JSON.stringify(query));
-    console.log('after added query', query);
+    console.log('modifiedQuery', JSON.stringify(query));
     const { websiteContext, ...customQuery} = query
     const entityManager = getService('entity-manager');
     const permissionChecker = getService('permission-checker').create({ userAbility, model });
@@ -93,8 +114,15 @@ module.exports = {
   },
 
   async findOne(ctx) {
-    const { userAbility } = ctx.state;
+    const { userAbility, user } = ctx.state;
     const { model, id } = ctx.params;
+
+    console.log('query', query);
+
+    // let website = query.websiteContext;
+    // if (!isAuthorizedByWebsite(website, user.roles)) {
+    //   return ctx.forbidden();
+    // }
 
     const entityManager = getService('entity-manager');
     const permissionChecker = getService('permission-checker').create({ userAbility, model });
