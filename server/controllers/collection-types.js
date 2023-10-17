@@ -7,7 +7,7 @@ const { validateBulkDeleteInput } = require('./validation');
 
 const contentTypesByWebsites = [
   "api::post.post",
-  "api::letak.letak",
+  // "api::letak.letak",
   "api::career.career",
   "api::event.event"
 ];
@@ -20,7 +20,6 @@ const contentTypesByDomain = [
   "api::contact-form.contact-form",
   "api::faq.faq",
   "api::page.page",
-  "api::tag.tag",
   "api::tag.tag",
 ];
 
@@ -47,7 +46,7 @@ module.exports = {
     const { userAbility, user } = ctx.state;
     const { model } = ctx.params;
     const { query } = ctx.request;
-    console.log('query', query);
+    // console.log('query', query);
 
     let website = query.websiteContext;
     if (!isAuthorizedByWebsite(website, user.roles)) {
@@ -88,7 +87,7 @@ module.exports = {
       }
     }
 
-    console.log('modifiedQuery', JSON.stringify(query));
+    // console.log('modifiedQuery', JSON.stringify(query));
     const { websiteContext, ...customQuery} = query
     const entityManager = getService('entity-manager');
     const permissionChecker = getService('permission-checker').create({ userAbility, model });
@@ -117,7 +116,7 @@ module.exports = {
     const { userAbility, user } = ctx.state;
     const { model, id } = ctx.params;
 
-    console.log('query', query);
+    // console.log('query', query);
 
     // let website = query.websiteContext;
     // if (!isAuthorizedByWebsite(website, user.roles)) {
