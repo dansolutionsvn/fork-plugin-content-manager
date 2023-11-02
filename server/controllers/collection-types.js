@@ -46,7 +46,7 @@ module.exports = {
     const { userAbility, user } = ctx.state;
     const { model } = ctx.params;
     const { query } = ctx.request;
-    // console.log('query', query);
+    console.log('query', query);
 
     let website = query.websiteContext;
     if (!isAuthorizedByWebsite(website, user.roles)) {
@@ -87,7 +87,7 @@ module.exports = {
       }
     }
 
-    // console.log('modifiedQuery', JSON.stringify(query));
+    console.log('modifiedQuery', JSON.stringify(query));
     const { websiteContext, ...customQuery} = query
     const entityManager = getService('entity-manager');
     const permissionChecker = getService('permission-checker').create({ userAbility, model });

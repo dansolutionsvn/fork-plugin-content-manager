@@ -25,6 +25,7 @@ module.exports = {
     const { toDto } = getService('data-mapper');
 
     ctx.body = { data: contentTypes.map(toDto) };
+    console.log(ctx.body)
   },
 
   async findContentTypesSettings(ctx) {
